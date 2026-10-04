@@ -17,8 +17,19 @@ class SummariesController < ApplicationController
     end
   end
 
+  # GET /summaries/:id            → page
+  # GET /summaries/:id.{srt,txt,md,json} → file download (only once done)
   def show
     @summary = Summary.find(params[:id])
+    format = params[:format]&.to_sym
+    return if format.nil? || format == :html
+    return head :not_found unless Exporters::FORMATS.key?(format)
+    return head :conflict unless @summary.done?
+
+    send_data Exporters.render(@summary, format),
+              type: Exporters.mime(format),
+              filename: "summary-#{@summary.id}.#{format}",
+              disposition: :attachment
   end
 
   private

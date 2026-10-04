@@ -12,6 +12,13 @@
   </header>
 
   <% if summary.done? %>
+    <nav class="downloads">
+      Download:
+      <% Exporters::FORMATS.each_key do |fmt| %>
+        <%= link_to fmt.to_s, summary_path(summary, format: fmt), download: "summary-#{summary.id}.#{fmt}", data: { turbo: false } %>
+      <% end %>
+    </nav>
+
     <section>
       <h2>Summary</h2>
       <div class="markdown"><%= render_markdown(summary.summary) %></div>
