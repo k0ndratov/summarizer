@@ -21,7 +21,7 @@ class Transcriber
   rescue Faraday::TimeoutError, Faraday::ConnectionFailed, Faraday::ServerError, Faraday::TooManyRequestsError => e
     raise Services::TransientError, "Whisper: #{e.message}"
   rescue Faraday::ClientError => e
-    raise Services::Error, "Whisper: #{e.response&.dig(:body, 'error', 'message') || e.message}"
+    raise Services::Error, "Whisper: #{api_error_message(e)}"
   end
 
   private
@@ -29,5 +29,14 @@ class Transcriber
   def normalize(segments)
     segments.map { |s| { "start" => s["start"].to_f.round(3), "end" => s["end"].to_f.round(3), "text" => s["text"].to_s.strip } }
             .reject { |s| s["text"].empty? }
+  end
+
+  # Faraday leaves the error body as a raw JSON string; OpenAI puts the reason in error.message.
+  def api_error_message(error)
+    body = error.response&.dig(:body)
+    body = JSON.parse(body) if body.is_a?(String)
+    body.dig("error", "message") || error.message
+  rescue JSON::ParserError, TypeError
+    error.message
   end
 end
