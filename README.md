@@ -1,4 +1,4 @@
-# summorization
+# AI Video Summarizer
 
 Paste a public Google Drive link to a video or audio file → get a timestamped transcript and a summary. Watch the progress live, then download the result as `srt`, `txt`, `md`, or `json`.
 

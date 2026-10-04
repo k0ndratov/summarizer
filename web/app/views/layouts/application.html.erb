@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Summorization" %></title>
+    <title><%= content_for(:title) || "AI Video Summarizer" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -17,7 +17,7 @@
 
   <body data-fake-services="<%= Services.fake? %>">
     <header class="topbar">
-      <%= link_to "Summorization", root_path, class: "brand" %>
+      <%= link_to "AI Video Summarizer", root_path, class: "brand" %>
       <nav data-controller="theme">
         <%= link_to "History", summaries_path %>
         <button type="button" class="theme-toggle" data-action="theme#toggle" aria-label="Toggle dark theme">
