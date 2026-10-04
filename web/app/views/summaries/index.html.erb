@@ -1,0 +1,17 @@
+<% content_for :title, "History" %>
+<h1>History</h1>
+
+<% if @summaries.empty? %>
+  <p class="muted">Nothing yet. <%= link_to "Summarize a video", root_path %>.</p>
+<% else %>
+  <table class="history">
+    <% @summaries.each do |s| %>
+      <tr>
+        <td><%= link_to "##{s.id}", s %></td>
+        <td class="url"><%= s.source_url %></td>
+        <td><span class="status status-<%= s.status %>"><%= s.status %></span></td>
+        <td class="muted"><%= time_ago_in_words(s.created_at) %> ago</td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

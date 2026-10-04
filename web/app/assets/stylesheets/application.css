@@ -1,10 +1,28 @@
-/*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
- */
+:root { --fg: #1a1a1a; --muted: #666; --border: #ddd; --accent: #2563eb; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--fg); }
+a { color: var(--accent); }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1.5rem; border-bottom: 1px solid var(--border); }
+.brand { font-weight: 700; color: var(--fg); text-decoration: none; }
+.container { max-width: 860px; margin: 2rem auto; padding: 0 1.5rem; }
+.muted { color: var(--muted); }
+.error { color: #b91c1c; }
+
+.url-form { display: flex; gap: .5rem; flex-wrap: wrap; }
+.url-form input[type=url] { flex: 1; min-width: 300px; padding: .6rem .8rem; font-size: 1rem; border: 1px solid var(--border); border-radius: 6px; }
+.url-form input[type=submit] { padding: .6rem 1.2rem; font-size: 1rem; color: #fff; background: var(--accent); border: 0; border-radius: 6px; cursor: pointer; }
+.url-form .error { flex-basis: 100%; }
+
+.status { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .85rem; font-weight: 600; background: #eee; }
+.status-pending { background: #eee; }
+.status-downloading, .status-transcribing, .status-summarizing { background: #fef3c7; color: #92400e; }
+.status-done { background: #dcfce7; color: #166534; }
+.status-failed { background: #fee2e2; color: #991b1b; }
+
+table { border-collapse: collapse; width: 100%; }
+td { padding: .4rem .6rem; vertical-align: top; border-top: 1px solid var(--border); }
+.transcript .ts { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; width: 1%; }
+.history .url { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.markdown { padding: 1rem; background: #f8fafc; border-radius: 6px; }
+.downloads { display: flex; gap: .75rem; margin: .5rem 0 1.5rem; }

@@ -1,0 +1,10 @@
+<h1>Summarize a video</h1>
+<p class="muted">Paste a public Google Drive link ("anyone with the link"). You get a timestamped transcript and a summary.</p>
+
+<%= form_with model: @summary, class: "url-form" do |f| %>
+  <% if @summary.errors.any? %>
+    <p class="error" role="alert"><%= @summary.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <%= f.url_field :source_url, placeholder: "https://drive.google.com/file/d/…/view", required: true, autofocus: true, size: 60 %>
+  <%= f.submit "Summarize" %>
+<% end %>

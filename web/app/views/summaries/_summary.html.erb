@@ -1,0 +1,32 @@
+<%= tag.article id: dom_id(summary), class: "summary" do %>
+  <header>
+    <h1>Summary #<%= summary.id %></h1>
+    <p class="muted"><%= link_to summary.source_url, summary.source_url, target: "_blank", rel: "noopener" %></p>
+    <p>
+      Status:
+      <span class="status status-<%= summary.status %>" data-status="<%= summary.status %>"><%= summary.status %></span>
+    </p>
+    <% if summary.failed? %>
+      <p class="error" role="alert"><%= summary.error %></p>
+    <% end %>
+  </header>
+
+  <% if summary.done? %>
+    <section>
+      <h2>Summary</h2>
+      <div class="markdown"><%= summary.summary %></div>
+    </section>
+
+    <section>
+      <h2>Transcript</h2>
+      <table class="transcript">
+        <% summary.segments.each do |seg| %>
+          <tr>
+            <td class="ts"><%= format_timestamp(seg["start"]) %></td>
+            <td><%= seg["text"] %></td>
+          </tr>
+        <% end %>
+      </table>
+    </section>
+  <% end %>
+<% end %>
