@@ -9,7 +9,7 @@ Everything else is blocked on nothing but these. Do them first, in any order.
 - [ ] **OpenAI account** → API key with billing enabled (Whisper is pay-per-minute)
 - [ ] **Anthropic account** → API key
 - [ ] Put both keys into `.env` (still placeholders) locally (file is git-ignored; never paste keys into chat)
-- [x] **GitHub repo**: create empty public repo `summorization`; note the remote URL
+- [x] **GitHub repo**: repo: `github.com/k0ndratov/summarizer`
 - [x] Git identity on this machine: `git config --global user.name / user.email`
 - [x] Push auth working: `gh auth login` or SSH key added to GitHub
 - [x] Docker daemon running and `docker compose version` works; `make` installed
@@ -156,7 +156,7 @@ E2E `e2e/exports.spec.ts`: on a `done` page, click each of the 4 links → `page
 
 **Acceptance:**
 ```sh
-cd /tmp && git clone <repo url> fresh && cd fresh && cp .env.example .env   # fill keys
+cd /tmp && git clone git@github.com:k0ndratov/summarizer.git fresh && cd fresh && cp .env.example .env   # fill keys
 make start                                  # from zero to running, no manual steps
 # browser: full flow on the test link → done, 4 downloads work
 make test                                   # rails + node + playwright, all green
