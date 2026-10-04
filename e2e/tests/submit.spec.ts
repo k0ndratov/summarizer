@@ -1,16 +1,15 @@
 import { test, expect } from "@playwright/test";
+import { submit } from "./helpers";
 
 const DRIVE_URL = "https://drive.google.com/file/d/e2e-submit/view";
 
-test("submitting a URL creates a pending summary page", async ({ page }) => {
+test("submitting a URL creates a summary page", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Summarize a video" })).toBeVisible();
 
-  await page.getByPlaceholder(/drive.google.com/).fill(DRIVE_URL);
-  await page.getByRole("button", { name: "Summarize" }).click();
-
-  await expect(page).toHaveURL(/\/summaries\/\d+$/);
-  await expect(page.locator("[data-status]")).toHaveText(/pending|downloading|transcribing|summarizing|done/);
+  const id = await submit(page, DRIVE_URL);
+  expect(id).toBeGreaterThan(0);
+  await expect(page.locator("[data-status]")).toHaveText(/^(pending|downloading|transcribing|summarizing|done)$/);
   await expect(page.getByRole("link", { name: DRIVE_URL })).toBeVisible();
 });
 

@@ -7,6 +7,7 @@ services:
     environment:
       DOWNLOADER_URL: http://downloader:3001
       SOLID_QUEUE_IN_PUMA: "true"
+      FAKE_SERVICES: ${FAKE_SERVICES:-false}
     volumes:
       - ./web:/app
       - web_bundle:/usr/local/bundle

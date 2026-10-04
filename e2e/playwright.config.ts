@@ -15,7 +15,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "cd .. && docker compose up -d --wait",
+    command: "cd .. && FAKE_SERVICES=true docker compose up -d --wait",
     url: "http://localhost:3000/up",
     reuseExistingServer: true,
     timeout: 180_000,

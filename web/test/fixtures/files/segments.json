@@ -1,0 +1,6 @@
+[
+  { "start": 0.0, "end": 3.2, "text": "Hello and welcome to this short test video." },
+  { "start": 3.2, "end": 7.9, "text": "Today we check that transcription, timestamps and summaries work end to end." },
+  { "start": 7.9, "end": 12.4, "text": "First we download the audio, then we send it to Whisper." },
+  { "start": 12.4, "end": 17.9, "text": "Finally Claude writes a summary and we export the result. Thanks for watching." }
+]

@@ -21,3 +21,4 @@ e2e/playwright-report/
 
 # local agent notes
 .ai/
+!web/test/fixtures/files/sample.mp3

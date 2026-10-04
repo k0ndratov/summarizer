@@ -27,6 +27,10 @@ gem "solid_queue"
 gem "solid_cable"
 
 # Reduces boot times through caching; required in config/boot.rb
+# External APIs: Whisper transcription and Claude summarization
+gem "ruby-openai", "~> 8.0"
+gem "anthropic", "~> 1.0"
+
 gem "bootsnap", require: false
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
@@ -48,6 +52,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "minitest-mock"
 end
 
 group :test do
