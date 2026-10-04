@@ -3,7 +3,9 @@ services:
     build: ./web
     ports:
       - "3000:3000"
-    env_file: .env
+    env_file:
+      - path: .env
+        required: false   # CI and FAKE_SERVICES runs work without keys
     environment:
       DOWNLOADER_URL: http://downloader:3001
       SOLID_QUEUE_IN_PUMA: "true"
@@ -15,6 +17,11 @@ services:
     depends_on:
       downloader:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:3000/up"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   downloader:
     build: ./downloader

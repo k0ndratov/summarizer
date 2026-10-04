@@ -1,5 +1,6 @@
-.PHONY: start stop logs shell test test-web test-downloader e2e
+.PHONY: start stop logs shell test test-web test-downloader e2e up-fake
 
+# Run the app with real APIs (needs OPENAI_API_KEY / ANTHROPIC_API_KEY in .env).
 start:
 	docker compose up --build
 
@@ -12,7 +13,11 @@ logs:
 shell:
 	docker compose exec web bash
 
-test: test-web test-downloader e2e
+# All test layers. Restarts the stack with FAKE_SERVICES=true: no external API calls.
+test: up-fake test-web test-downloader e2e
+
+up-fake:
+	FAKE_SERVICES=true docker compose up --build -d --wait
 
 test-web:
 	docker compose exec web bin/rails test
@@ -20,5 +25,8 @@ test-web:
 test-downloader:
 	docker compose exec downloader npm test
 
-e2e:
+e2e: e2e/node_modules
 	cd e2e && npx playwright test
+
+e2e/node_modules: e2e/package.json
+	cd e2e && npm install && npx playwright install chromium --only-shell

@@ -8,11 +8,11 @@ Everything else is blocked on nothing but these. Do them first, in any order.
 
 - [ ] **OpenAI account** → API key with billing enabled (Whisper is pay-per-minute)
 - [ ] **Anthropic account** → API key
-- [ ] Put both keys into `.env` locally (file is git-ignored; never paste keys into chat)
-- [ ] **GitHub repo**: create empty public repo `summorization`; note the remote URL
-- [ ] Git identity on this machine: `git config --global user.name / user.email`
-- [ ] Push auth working: `gh auth login` or SSH key added to GitHub
-- [ ] Docker daemon running and `docker compose version` works; `make` installed
+- [ ] Put both keys into `.env` (still placeholders) locally (file is git-ignored; never paste keys into chat)
+- [x] **GitHub repo**: create empty public repo `summorization`; note the remote URL
+- [x] Git identity on this machine: `git config --global user.name / user.email`
+- [x] Push auth working: `gh auth login` or SSH key added to GitHub
+- [x] Docker daemon running and `docker compose version` works; `make` installed
 - [x] Test link → `TEST_DRIVE_URL` in `.env` (18 s mp4, public, verified with `yt-dlp --simulate`)
 
 **Acceptance:**
@@ -33,12 +33,12 @@ Needs from Part A: nothing for steps 1–3; `.env` keys and the test Drive link 
 - Manual real-API run — once, before submission (stage 7).
 
 ### 1. Repo skeleton
-- [ ] `git init`, `.gitignore` (`.env`, `storage/`, `node_modules/`, `tmp/`, `log/`)
-- [ ] `.env.example`: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` (secrets only)
-- [ ] `docker-compose.yml`: services `web` (:3000) and `downloader` (:3001), volume `media:/data`, `env_file: .env`, `web.environment.DOWNLOADER_URL=http://downloader:3001`
-- [ ] `Makefile`: `start`, `stop`, `logs`, `shell`, `test` (rails + node + e2e), `e2e`
-- [ ] `README.md`: what it is, `make start`, open http://localhost:3000, `make test`
-- [ ] Commit, push
+- [x] `git init`, `.gitignore` (`.env`, `storage/`, `node_modules/`, `tmp/`, `log/`)
+- [x] `.env.example`: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY` (secrets only)
+- [x] `docker-compose.yml`: services `web` (:3000) and `downloader` (:3001), volume `media:/data`, `env_file: .env`, `web.environment.DOWNLOADER_URL=http://downloader:3001`
+- [x] `Makefile`: `start`, `stop`, `logs`, `shell`, `test` (rails + node + e2e), `e2e`
+- [x] `README.md`: what it is, `make start`, open http://localhost:3000, `make test`
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -50,11 +50,11 @@ git status --short                      # empty; git log shows the push
 ```
 
 ### 2. Downloader service (`downloader/`)
-- [ ] `Dockerfile`: node:22-alpine + `ffmpeg` + `yt-dlp`
-- [ ] `server.js` (Express/Fastify): `GET /health`, `POST /download {url, id}`
-- [ ] Spawn `yt-dlp -x --audio-format mp3 -o /data/<id>.%(ext)s <url>`; await exit
-- [ ] Response: `200 {path: "/data/<id>.mp3"}`; `422 {error}` on yt-dlp failure; `400` on bad input
-- [ ] Commit, push
+- [x] `Dockerfile`: node:22-alpine + `ffmpeg` + `yt-dlp`
+- [x] `server.js` (Express/Fastify): `GET /health`, `POST /download {url, id}`
+- [x] Spawn `yt-dlp -x --audio-format mp3 -o /data/<id>.%(ext)s <url>`; await exit
+- [x] Response: `200 {path: "/data/<id>.mp3"}`; `422 {error}` on yt-dlp failure; `400` on bad input
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -68,17 +68,17 @@ curl -s -X POST localhost:3001/download -d '{}' -w '%{http_code}'        # → 4
 Test: `downloader/test/server.test.js` (node:test) — 400 on missing fields, 422 when yt-dlp exits non-zero (stub spawn), 200 + path on success.
 
 ### 3. Rails app skeleton (`web/`)
-- [ ] `rails new web --database=sqlite3 --css=tailwind` (Solid Queue/Cable included)
-- [ ] `Dockerfile` (dev-friendly: no asset precompile step needed), add to compose
-- [ ] `database.yml`: `primary`, `queue`, `cable` SQLite files under `storage/`
-- [ ] `development.rb`: `queue_adapter = :solid_queue`; `SOLID_QUEUE_IN_PUMA=true` in compose
-- [ ] `FAKE_SERVICES` env: `config/initializers/services.rb` picks `Fake*` or real service classes; compose has a `web-test` profile with `FAKE_SERVICES=true`
-- [ ] `e2e/`: `package.json` (`@playwright/test`), `playwright.config.ts` (`baseURL: http://localhost:3000`, `webServer` → `docker compose --profile test up`), `make e2e`
-- [ ] Model `Summary`: `source_url`, `status` (enum: pending/downloading/transcribing/summarizing/done/failed), `error`, `audio_path`, `segments` (json), `summary` (text)
-- [ ] `SummariesController`: `new`, `create`, `show`; routes; root → `summaries#new`
-- [ ] Views: form with URL input; show page with status badge
-- [ ] `create` enqueues `TranscribeJob.perform_later(summary.id)` and redirects to `show`
-- [ ] Commit, push
+- [x] `rails new web --database=sqlite3 --css=tailwind` (Solid Queue/Cable included)
+- [x] `Dockerfile` (dev-friendly: no asset precompile step needed), add to compose
+- [x] `database.yml`: `primary`, `queue`, `cable` SQLite files under `storage/`
+- [x] `development.rb`: `queue_adapter = :solid_queue`; `SOLID_QUEUE_IN_PUMA=true` in compose
+- [x] `FAKE_SERVICES` env: `config/initializers/services.rb` picks `Fake*` or real service classes; compose has a `web-test` profile with `FAKE_SERVICES=true`
+- [x] `e2e/`: `package.json` (`@playwright/test`), `playwright.config.ts` (`baseURL: http://localhost:3000`, `webServer` → `docker compose --profile test up`), `make e2e`
+- [x] Model `Summary`: `source_url`, `status` (enum: pending/downloading/transcribing/summarizing/done/failed), `error`, `audio_path`, `segments` (json), `summary` (text)
+- [x] `SummariesController`: `new`, `create`, `show`; routes; root → `summaries#new`
+- [x] Views: form with URL input; show page with status badge
+- [x] `create` enqueues `TranscribeJob.perform_later(summary.id)` and redirects to `show`
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -92,13 +92,13 @@ Tests: `test/models/summary_test.rb` (status enum, url presence/format validatio
 E2E `e2e/submit.spec.ts`: home shows form → fill URL → submit → URL matches `/summaries/\d+` → `[data-status]` text is `pending`; empty/invalid URL → stays on form, error visible.
 
 ### 4. Pipeline job (`TranscribeJob`)
-- [ ] `app/services/downloader_client.rb`: `POST #{DOWNLOADER_URL}/download`, `read_timeout: 600`, raises `DownloaderClient::Error`
-- [ ] `app/services/transcriber.rb`: `ruby-openai` gem, `audio.transcribe(model: "whisper-1", response_format: "verbose_json")`, returns `segments`
-- [ ] `app/services/summarizer.rb`: `anthropic` gem, `messages.create(model: "claude-sonnet-4-5", ...)` with a summarization prompt, returns markdown
-- [ ] Job: update `status` before each step; on exception set `status: failed`, `error: message`
-- [ ] Reject audio > 25 MB with a clear error (chunking: step 8)
-- [ ] `retry_on` network/timeout errors, 3 attempts
-- [ ] Commit, push
+- [x] `app/services/downloader_client.rb`: `POST #{DOWNLOADER_URL}/download`, `read_timeout: 600`, raises `DownloaderClient::Error`
+- [x] `app/services/transcriber.rb`: `ruby-openai` gem, `audio.transcribe(model: "whisper-1", response_format: "verbose_json")`, returns `segments`
+- [x] `app/services/summarizer.rb`: `anthropic` gem, `messages.create(model: "claude-sonnet-4-5", ...)` with a summarization prompt, returns markdown
+- [x] Job: update `status` before each step; on exception set `status: failed`, `error: message`
+- [x] Reject audio > 25 MB with a clear error (chunking: step 8)
+- [x] `retry_on` network/timeout errors, 3 attempts
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -113,10 +113,10 @@ Fakes for E2E: `FakeDownloaderClient` (copies `test/fixtures/files/sample.mp3` t
 E2E `e2e/pipeline.spec.ts`: submit → page reaches `done` (no reload; `page.on('framenavigated')` count stays 1) → summary heading and ≥ 1 transcript row visible; submit URL containing `fail` → page reaches `failed` with error text.
 
 ### 5. Live status + result page
-- [ ] `turbo_stream_from @summary` in `show`; `broadcasts_refreshes` (or `after_update_commit` broadcast) in model
-- [ ] `_summary.html.erb` partial: status, error, summary (markdown → HTML via `redcarpet`/`commonmarker`), transcript table with `mm:ss` timestamps
-- [ ] Verify Solid Cable works inside Docker (Action Cable mounted, `config/cable.yml` → `solid_cable`)
-- [ ] Commit, push
+- [x] `turbo_stream_from @summary` in `show`; `broadcasts_refreshes` (or `after_update_commit` broadcast) in model
+- [x] `_summary.html.erb` partial: status, error, summary (markdown → HTML via `redcarpet`/`commonmarker`), transcript table with `mm:ss` timestamps
+- [x] Verify Solid Cable works inside Docker (Action Cable mounted, `config/cable.yml` → `solid_cable`)
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -128,10 +128,10 @@ Test: `test/models/summary_test.rb` — `assert_turbo_stream_broadcasts(summary)
 E2E `e2e/live-status.spec.ts`: after submit, observe `[data-status]` with `MutationObserver` (via `page.evaluate`), collect values until `done`; assert the ordered sequence `pending, downloading, transcribing, summarizing, done`; assert a WebSocket to `/cable` was opened (`page.on('websocket')`).
 
 ### 6. Exports
-- [ ] `show` responds to `.srt`, `.txt`, `.md`, `.json` (`respond_to` + `send_data`)
-- [ ] `app/services/exporters/`: `srt` (index, `HH:MM:SS,mmm --> ...`, text), `txt` (plain transcript), `md` (summary + timestamped transcript), `json` (raw row)
-- [ ] Download links on the result page
-- [ ] Commit, push
+- [x] `show` responds to `.srt`, `.txt`, `.md`, `.json` (`respond_to` + `send_data`)
+- [x] `app/services/exporters/`: `srt` (index, `HH:MM:SS,mmm --> ...`, text), `txt` (plain transcript), `md` (summary + timestamped transcript), `json` (raw row)
+- [x] Download links on the result page
+- [x] Commit, push
 
 **Acceptance:**
 ```sh
@@ -147,11 +147,11 @@ Tests (`test/services/exporters/*_test.rb`, fixed `segments` input): srt timesta
 E2E `e2e/exports.spec.ts`: on a `done` page, click each of the 4 links → `page.waitForEvent('download')` → filename ends with `.srt/.txt/.md/.json`; read content: srt first line `1`, second matches `\d\d:\d\d:\d\d,\d{3} --> `; json parses with `segments.length > 0`.
 
 ### 7. Polish and submission
-- [ ] `index` page listing past summaries
-- [ ] Delete mp3 after successful transcription
-- [ ] `README.md`: screenshots, env vars, architecture link, limitations (public Drive links only, 25 MB)
+- [x] `index` page listing past summaries
+- [x] Delete mp3 after successful transcription
+- [x] `README.md`: screenshots, env vars, architecture link, limitations (public Drive links only, 25 MB)
 - [ ] Fresh clone test: `git clone … && cp .env.example .env && make start && make test`
-- [ ] `make e2e` in CI: `.github/workflows/ci.yml` runs rails test, node test, playwright (fake services) on every push
+- [x] `make e2e` in CI: `.github/workflows/ci.yml` runs rails test, node test, playwright (fake services) on every push
 - [ ] Final push
 
 **Acceptance:**
