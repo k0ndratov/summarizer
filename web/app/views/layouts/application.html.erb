@@ -7,6 +7,10 @@
     <%= csp_meta_tag %>
     <%= yield :head %>
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%# Apply the saved theme before the stylesheet paints, to avoid a light flash. %>
+    <%= javascript_tag nonce: true do %>
+      const theme = localStorage.getItem("theme"); if (theme) document.documentElement.dataset.theme = theme;
+    <% end %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -14,7 +18,12 @@
   <body data-fake-services="<%= Services.fake? %>">
     <header class="topbar">
       <%= link_to "Summorization", root_path, class: "brand" %>
-      <nav><%= link_to "History", summaries_path %></nav>
+      <nav data-controller="theme">
+        <%= link_to "History", summaries_path %>
+        <button type="button" class="theme-toggle" data-action="theme#toggle" aria-label="Toggle dark theme">
+          <span data-theme-target="label"></span>
+        </button>
+      </nav>
     </header>
     <main class="container">
       <%= yield %>

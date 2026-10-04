@@ -1,28 +1,80 @@
-:root { --fg: #1a1a1a; --muted: #666; --border: #ddd; --accent: #2563eb; }
+/* Light palette. Dark palette applies via prefers-color-scheme or an explicit
+   data-theme="dark" on <html> (set by the toggle, persisted in localStorage). */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-raised: #f8fafc;
+  --fg: #1a1a1a;
+  --muted: #666;
+  --border: #ddd;
+  --accent: #2563eb;
+  --danger: #b91c1c;
+  --badge-bg: #eee;
+  --badge-fg: var(--fg);
+  --busy-bg: #fef3c7; --busy-fg: #92400e;
+  --done-bg: #dcfce7; --done-fg: #166534;
+  --fail-bg: #fee2e2; --fail-fg: #991b1b;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --bg-raised: #181b22;
+  --fg: #e6e6e6;
+  --muted: #9a9a9a;
+  --border: #2a2e37;
+  --accent: #7aa2ff;
+  --danger: #f87171;
+  --badge-bg: #2a2e37;
+  --badge-fg: var(--fg);
+  --busy-bg: #3b2f0b; --busy-fg: #fcd34d;
+  --done-bg: #0f3b22; --done-fg: #86efac;
+  --fail-bg: #431417; --fail-fg: #fca5a5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0f1115;
+    --bg-raised: #181b22;
+    --fg: #e6e6e6;
+    --muted: #9a9a9a;
+    --border: #2a2e37;
+    --accent: #7aa2ff;
+    --danger: #f87171;
+    --badge-bg: #2a2e37;
+    --busy-bg: #3b2f0b; --busy-fg: #fcd34d;
+    --done-bg: #0f3b22; --done-fg: #86efac;
+    --fail-bg: #431417; --fail-fg: #fca5a5;
+  }
+}
+
 * { box-sizing: border-box; }
-body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--fg); }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
 a { color: var(--accent); }
 
-.topbar { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1.5rem; border-bottom: 1px solid var(--border); }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .75rem 1.5rem; border-bottom: 1px solid var(--border); }
+.topbar nav { display: flex; align-items: center; gap: 1rem; }
 .brand { font-weight: 700; color: var(--fg); text-decoration: none; }
 .container { max-width: 860px; margin: 2rem auto; padding: 0 1.5rem; }
 .muted { color: var(--muted); }
-.error { color: #b91c1c; }
+.error { color: var(--danger); }
+
+.theme-toggle { padding: .3rem .6rem; font: inherit; font-size: .9rem; color: var(--fg); background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
 
 .url-form { display: flex; gap: .5rem; flex-wrap: wrap; }
-.url-form input[type=url] { flex: 1; min-width: 300px; padding: .6rem .8rem; font-size: 1rem; border: 1px solid var(--border); border-radius: 6px; }
+.url-form input[type=url] { flex: 1; min-width: 300px; padding: .6rem .8rem; font-size: 1rem; color: var(--fg); background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px; }
 .url-form input[type=submit] { padding: .6rem 1.2rem; font-size: 1rem; color: #fff; background: var(--accent); border: 0; border-radius: 6px; cursor: pointer; }
 .url-form .error { flex-basis: 100%; }
 
-.status { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .85rem; font-weight: 600; background: #eee; }
-.status-pending { background: #eee; }
-.status-downloading, .status-transcribing, .status-summarizing { background: #fef3c7; color: #92400e; }
-.status-done { background: #dcfce7; color: #166534; }
-.status-failed { background: #fee2e2; color: #991b1b; }
+.status { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .85rem; font-weight: 600; background: var(--badge-bg); color: var(--badge-fg); }
+.status-downloading, .status-transcribing, .status-summarizing { background: var(--busy-bg); color: var(--busy-fg); }
+.status-done { background: var(--done-bg); color: var(--done-fg); }
+.status-failed { background: var(--fail-bg); color: var(--fail-fg); }
 
 table { border-collapse: collapse; width: 100%; }
 td { padding: .4rem .6rem; vertical-align: top; border-top: 1px solid var(--border); }
 .transcript .ts { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; width: 1%; }
 .history .url { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.markdown { padding: 1rem; background: #f8fafc; border-radius: 6px; }
+.markdown { padding: 1rem; background: var(--bg-raised); border-radius: 6px; }
 .downloads { display: flex; gap: .75rem; margin: .5rem 0 1.5rem; }
