@@ -14,7 +14,7 @@
   <% if summary.done? %>
     <section>
       <h2>Summary</h2>
-      <div class="markdown"><%= summary.summary %></div>
+      <div class="markdown"><%= render_markdown(summary.summary) %></div>
     </section>
 
     <section>

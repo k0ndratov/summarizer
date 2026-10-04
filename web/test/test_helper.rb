@@ -2,6 +2,7 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
+require "turbo/broadcastable/test_helper"
 
 module ActiveSupport
   class TestCase

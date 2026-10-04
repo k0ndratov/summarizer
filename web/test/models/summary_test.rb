@@ -1,6 +1,17 @@
 require "test_helper"
 
 class SummaryTest < ActiveSupport::TestCase
+  include Turbo::Broadcastable::TestHelper
+
+  test "status updates broadcast a replace of the summary partial" do
+    s = Summary.create!(source_url: "https://drive.google.com/x")
+    streams = capture_turbo_stream_broadcasts(s) { s.update!(status: :transcribing) }
+    assert_equal 1, streams.size
+    assert_equal "replace", streams.first["action"]
+    assert_equal "summary_#{s.id}", streams.first["target"]
+    assert_includes streams.first.to_html, 'data-status="transcribing"'
+  end
+
   test "defaults to pending" do
     assert_predicate Summary.create!(source_url: "https://drive.google.com/x"), :pending?
   end

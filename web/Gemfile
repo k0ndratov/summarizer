@@ -30,6 +30,8 @@ gem "solid_cable"
 # External APIs: Whisper transcription and Claude summarization
 gem "ruby-openai", "~> 8.0"
 gem "anthropic", "~> 1.0"
+# Markdown → HTML for the summary
+gem "redcarpet", "~> 3.6"
 
 gem "bootsnap", require: false
 
