@@ -3,6 +3,8 @@ FROM node:22-alpine
 RUN apk add --no-cache ffmpeg python3 py3-pip wget \
  && pip install --no-cache-dir --break-system-packages yt-dlp
 
+RUN mkdir -p /data && chmod 777 /data
+
 WORKDIR /app
 COPY package.json ./
 COPY src ./src

@@ -6,6 +6,7 @@ import { stat } from "node:fs/promises";
 export function download({ url, target }) {
   const args = [
     "--no-playlist",
+    "--no-cache-dir",
     "--extract-audio",
     "--audio-format", "mp3",
     "--audio-quality", "5",

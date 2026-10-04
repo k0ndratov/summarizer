@@ -4,6 +4,8 @@ RUN apt-get update -qq \
  && apt-get install -y --no-install-recommends build-essential git libsqlite3-dev libyaml-dev pkg-config curl \
  && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /data && chmod 777 /data
+
 WORKDIR /app
 COPY Gemfile Gemfile.lock* ./
 RUN bundle install && chmod -R a+rwX /usr/local/bundle

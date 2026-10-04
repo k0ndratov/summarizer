@@ -26,6 +26,7 @@ services:
 
   downloader:
     build: ./downloader
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3001:3001"
     volumes:
