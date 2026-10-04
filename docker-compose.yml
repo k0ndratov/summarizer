@@ -29,6 +29,8 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3001:3001"
+    environment:
+      CHUNK_BYTES: ${CHUNK_BYTES:-20971520}   # split audio above this size (Whisper limit is 25 MB)
     volumes:
       - ./downloader:/app
       - /app/node_modules

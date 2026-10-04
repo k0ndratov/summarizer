@@ -17,18 +17,18 @@ class TranscriberErrorTest < ActiveSupport::TestCase
   test "surfaces OpenAI's message from a raw JSON error body" do
     error = Faraday::UnauthorizedError.new("the server responded with status 401",
       { status: 401, body: '{"error":{"message":"Incorrect API key provided","type":"invalid_request_error"}}' })
-    e = assert_raises(Services::Error) { transcriber_raising(error).call(@path) }
+    e = assert_raises(Services::Error) { transcriber_raising(error).call([ { path: @path, start: 0.0 } ]) }
     assert_equal "Whisper: Incorrect API key provided", e.message
   end
 
   test "falls back to the exception message when the body is not JSON" do
     error = Faraday::BadRequestError.new("the server responded with status 400", { status: 400, body: "<html>nope</html>" })
-    e = assert_raises(Services::Error) { transcriber_raising(error).call(@path) }
+    e = assert_raises(Services::Error) { transcriber_raising(error).call([ { path: @path, start: 0.0 } ]) }
     assert_equal "Whisper: the server responded with status 400", e.message
   end
 
   test "server errors are transient" do
     error = Faraday::ServerError.new("the server responded with status 502", { status: 502, body: "" })
-    assert_raises(Services::TransientError) { transcriber_raising(error).call(@path) }
+    assert_raises(Services::TransientError) { transcriber_raising(error).call([ { path: @path, start: 0.0 } ]) }
   end
 end

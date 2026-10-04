@@ -6,13 +6,15 @@ class TranscribeJobTest < ActiveJob::TestCase
   setup do
     @summary = Summary.create!(source_url: "https://drive.google.com/file/d/abc/view")
     @audio = Rails.root.join("tmp/test_audio_#{@summary.id}.mp3").to_s
-    File.write(@audio, "x")
+    @chunk = Rails.root.join("tmp/test_audio_#{@summary.id}.part000.mp3").to_s
+    [ @audio, @chunk ].each { |p| File.write(p, "x") }
+    @download = { path: @audio, chunks: [ { path: @chunk, start: 0.0 } ] }
   end
 
-  teardown { File.delete(@audio) if File.exist?(@audio) }
+  teardown { [ @audio, @chunk ].each { |p| File.delete(p) if File.exist?(p) } }
 
   # Stubs Services.* with lambdas; records the status seen at each call.
-  def run_with(downloader: ->(**) { @audio }, transcriber: ->(_) { { language: "en", segments: SEGMENTS } }, summarizer: ->(_) { "## TL;DR\nok" })
+  def run_with(downloader: ->(**) { @download }, transcriber: ->(_) { { language: "en", segments: SEGMENTS } }, summarizer: ->(_) { "## TL;DR\nok" })
     seen = []
     summary = @summary
     service = ->(fn) { svc = Object.new; svc.define_singleton_method(:call) { |*a, **kw| seen << summary.reload.status; fn.call(*a, **kw) }; -> { svc } }
@@ -36,9 +38,16 @@ class TranscribeJobTest < ActiveJob::TestCase
     assert_nil @summary.error
   end
 
-  test "deletes the audio file once transcribed" do
+  test "passes the downloader's chunks to the transcriber" do
+    received = nil
+    run_with(transcriber: ->(chunks) { received = chunks; { language: "en", segments: SEGMENTS } })
+    assert_equal @download[:chunks], received
+  end
+
+  test "deletes the audio file and every chunk once transcribed" do
     run_with
     assert_not File.exist?(@audio)
+    assert_not File.exist?(@chunk)
     assert_nil @summary.audio_path
   end
 
@@ -74,7 +83,7 @@ class TranscribeJobTest < ActiveJob::TestCase
   test "already finished summaries are skipped" do
     @summary.update!(status: :done, summary: "keep")
     called = false
-    run_with(downloader: ->(**) { called = true; @audio })
+    run_with(downloader: ->(**) { called = true; @download })
     assert_not called
     assert_equal "keep", @summary.summary
   end

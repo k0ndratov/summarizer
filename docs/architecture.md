@@ -15,13 +15,13 @@ flowchart TB
   subgraph compose["docker compose — make start"]
     direction LR
     web["<b>web</b><br/>Rails 8, Puma, Solid Queue<br/><i>form · TranscribeJob · live result page · srt/txt/md/json</i>"]
-    dl["<b>downloader</b><br/>Node.js, yt-dlp, ffmpeg<br/><i>POST /download: URL → mp3</i>"]
+    dl["<b>downloader</b><br/>Node.js, yt-dlp, ffmpeg<br/><i>POST /download → 202, GET /download/:id<br/>URL → mp3, chunked above 20 MB</i>"]
     db[("<b>SQLite</b><br/>storage/*.sqlite3<br/><i>summaries · queue · cable</i>")]
     media[("<b>media volume</b><br/>/data<br/><i>mp3 files</i>")]
   end
 
   user -- "HTTP + WebSocket (Turbo Streams)" --> web
-  web -- "POST /download {url}" --> dl
+  web -- "POST /download, poll GET /download/:id" --> dl
   dl -- "yt-dlp" --> drive
   dl -- "writes mp3" --> media
   web -- "reads mp3" --> media
@@ -61,16 +61,17 @@ sequenceDiagram
 
   J->>DB: status=downloading
   DB-->>U: Turbo broadcast (status)
-  J->>D: POST /download {url, id}
-  D->>D: yt-dlp -x --audio-format mp3
-  D->>V: write /data/:id.mp3
-  D-->>J: 200 {path}
+  J->>D: POST /download {url, id} → 202
+  D->>D: yt-dlp -x --audio-format mp3; ffmpeg split if > 20 MB
+  D->>V: write /data/:id.mp3 (+ .partNNN.mp3)
+  J->>D: GET /download/:id (every 2 s)
+  D-->>J: {status: done, path, chunks[path,start]}
 
   J->>DB: status=transcribing
   DB-->>U: Turbo broadcast
   J->>V: read /data/:id.mp3
-  J->>W: POST /audio/transcriptions (verbose_json)
-  W-->>J: {text, segments[start,end,text]}
+  J->>W: POST /audio/transcriptions per chunk (verbose_json)
+  W-->>J: segments, shifted by chunk start
   J->>DB: UPDATE segments
 
   J->>DB: status=summarizing

@@ -17,12 +17,12 @@ class TranscribeJob < ApplicationJob
     return if @summary.finished?
 
     @summary.update!(status: :downloading, error: nil)
-    audio_path = Services.downloader.call(url: @summary.source_url, id: @summary.id)
-    @summary.update!(status: :transcribing, audio_path: audio_path)
+    audio = Services.downloader.call(url: @summary.source_url, id: @summary.id)
+    @summary.update!(status: :transcribing, audio_path: audio[:path])
 
-    transcript = Services.transcriber.call(audio_path)
+    transcript = Services.transcriber.call(audio[:chunks])
     @summary.update!(status: :summarizing, segments: transcript[:segments])
-    File.delete(audio_path) if File.exist?(audio_path)
+    delete_audio(audio)
 
     summary_text = Services.summarizer.call(transcript[:segments])
     @summary.update!(status: :done, summary: summary_text, audio_path: nil)
@@ -32,5 +32,11 @@ class TranscribeJob < ApplicationJob
     Rails.logger.error("TranscribeJob #{arguments.first}: #{error.class}: #{error.message}")
     @summary ||= Summary.find_by(id: arguments.first)
     @summary&.update!(status: :failed, error: error.message.truncate(1000))
+  end
+
+  private
+
+  def delete_audio(audio)
+    [ audio[:path], *audio[:chunks].map { |c| c[:path] } ].uniq.each { |p| File.delete(p) if File.exist?(p) }
   end
 end

@@ -20,6 +20,15 @@ const post = (base, body) =>
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 
+const poll = async (base, id) => {
+  for (let i = 0; i < 50; i++) {
+    const job = await (await fetch(`${base}/download/${id}`)).json();
+    if (job.status !== "running") return job;
+    await new Promise((r) => setTimeout(r, 10));
+  }
+  throw new Error("still running");
+};
+
 test("GET /health", async () => {
   await withServer(null, async (base) => {
     const res = await fetch(`${base}/health`);
@@ -28,21 +37,42 @@ test("GET /health", async () => {
   });
 });
 
-test("POST /download → 200 with path on success", async () => {
+test("POST /download → 202, then GET reports done with path and chunks", async () => {
   const calls = [];
-  await withServer(async (a) => calls.push(a), async (base) => {
+  const result = { path: "/data/42.mp3", chunks: [{ path: "/data/42.part000.mp3", start: 0 }, { path: "/data/42.part001.mp3", start: 600.5 }] };
+  await withServer(async (a) => { calls.push(a); return result; }, async (base) => {
     const res = await post(base, { url: "https://drive.google.com/file/d/abc/view", id: "42" });
-    assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { path: "/data/42.mp3" });
+    assert.equal(res.status, 202);
+    assert.deepEqual(await res.json(), { id: "42", status: "running" });
     assert.deepEqual(calls, [{ url: "https://drive.google.com/file/d/abc/view", target: "/data/42.mp3" }]);
+
+    assert.deepEqual(await poll(base, "42"), { status: "done", ...result });
   });
 });
 
-test("POST /download → 422 with yt-dlp error message", async () => {
-  await withServer(async () => { throw new Error("Unable to extract"); }, async (base) => {
-    const res = await post(base, { url: "https://example.com/nope", id: "bad" });
-    assert.equal(res.status, 422);
-    assert.deepEqual(await res.json(), { error: "Unable to extract" });
+test("GET reports running while the download is in flight, then failed with the message", async () => {
+  let fail;
+  const pending = new Promise((_, reject) => (fail = reject));
+  await withServer(() => pending, async (base) => {
+    await post(base, { url: "https://example.com/nope", id: "bad" });
+    assert.deepEqual(await (await fetch(`${base}/download/bad`)).json(), { status: "running" });
+
+    fail(new Error("Unable to extract"));
+    assert.deepEqual(await poll(base, "bad"), { status: "failed", error: "Unable to extract" });
+  });
+});
+
+test("a second POST for a running id is refused with 409", async () => {
+  await withServer(() => new Promise(() => {}), async (base) => {
+    await post(base, { url: "https://x", id: "dup" });
+    const res = await post(base, { url: "https://x", id: "dup" });
+    assert.equal(res.status, 409);
+  });
+});
+
+test("GET for an unknown id → 404", async () => {
+  await withServer(null, async (base) => {
+    assert.equal((await fetch(`${base}/download/nope`)).status, 404);
   });
 });
 

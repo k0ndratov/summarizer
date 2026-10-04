@@ -166,7 +166,16 @@ git log --oneline | wc -l                   # ≥ 7 commits (one per step)
 ```
 
 ### 8. Optional (if time allows)
-- [ ] Chunk audio > 25 MB with `ffmpeg -f segment`, offset timestamps, concatenate
-- [ ] Downloader async mode (job id + poll) instead of long sync request
+- [x] Chunk audio > 25 MB with `ffmpeg -f segment`, offset timestamps, concatenate
+- [x] Downloader async mode (job id + poll) instead of long sync request
 
-**Acceptance (if done):** 30+ min file → `done`, timestamps monotonic across chunk boundaries (`segments.each_cons(2).all? { |a,b| a["end"] <= b["start"] }`).
+**Acceptance:**
+```sh
+# Force chunking on the 18 s test file instead of needing a 30-min upload:
+CHUNK_BYTES=60000 docker compose up -d downloader
+curl -s -X POST localhost:3001/download -H 'content-type: application/json' -d "{\"url\":\"$TEST_DRIVE_URL\",\"id\":\"c\"}"   # → 202 {"id":"c","status":"running"}
+sleep 10; curl -s localhost:3001/download/c | jq .chunks   # → 3 chunks with increasing "start"
+# Job end-to-end (real downloader, Whisper/Claude faked): segments monotonic, no leftover files in /data
+docker compose up -d downloader   # back to the 20 MB default
+```
+Tests: `downloader/test` (202 → running → done/failed, 409 duplicate, 404 unknown); `test/services/downloader_client_test.rb` (poll sequence, failure classes, max_wait); `test/services/transcriber_test.rb` (timestamps shifted per chunk, monotonic).

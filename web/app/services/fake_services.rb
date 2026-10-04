@@ -15,12 +15,12 @@ module FakeServices
       target = File.join(ENV.fetch("DATA_DIR", "/data"), "#{id}.mp3")
       FileUtils.mkdir_p(File.dirname(target))
       FileUtils.cp(FIXTURES.join("sample.mp3"), target)
-      target
+      { path: target, chunks: [ { path: target, start: 0.0 } ] }
     end
   end
 
   class Transcriber
-    def call(_path)
+    def call(_chunks)
       FakeServices.delay
       { language: "en", segments: JSON.parse(FIXTURES.join("segments.json").read) }
     end
