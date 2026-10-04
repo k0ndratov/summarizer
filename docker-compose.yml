@@ -1,0 +1,34 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DOWNLOADER_URL: http://downloader:3001
+      SOLID_QUEUE_IN_PUMA: "true"
+    volumes:
+      - ./web:/app
+      - web_bundle:/usr/local/bundle
+      - media:/data
+    depends_on:
+      downloader:
+        condition: service_healthy
+
+  downloader:
+    build: ./downloader
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./downloader:/app
+      - /app/node_modules
+      - media:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  media:
+  web_bundle:
