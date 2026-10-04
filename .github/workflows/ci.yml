@@ -18,6 +18,9 @@ jobs:
           cache: npm
           cache-dependency-path: e2e/package-lock.json
 
+      - name: Run containers as the runner user (bind mounts must stay writable)
+        run: echo "UID=$(id -u)" >> "$GITHUB_ENV" && echo "GID=$(id -g)" >> "$GITHUB_ENV"
+
       - name: Start stack with fake external services
         run: FAKE_SERVICES=true docker compose up --build -d --wait
 

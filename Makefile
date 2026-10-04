@@ -1,5 +1,9 @@
 .PHONY: start stop logs shell test test-web test-downloader e2e up-fake
 
+# Containers run as this user so files on the bind mounts stay yours.
+export UID := $(shell id -u)
+export GID := $(shell id -g)
+
 # Run the app with real APIs (needs OPENAI_API_KEY / ANTHROPIC_API_KEY in .env).
 start:
 	docker compose up --build

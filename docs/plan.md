@@ -150,9 +150,9 @@ E2E `e2e/exports.spec.ts`: on a `done` page, click each of the 4 links → `page
 - [x] `index` page listing past summaries
 - [x] Delete mp3 after successful transcription
 - [x] `README.md`: screenshots, env vars, architecture link, limitations (public Drive links only, 25 MB)
-- [ ] Fresh clone test: `git clone … && cp .env.example .env && make start && make test`
+- [x] Fresh clone test: `git clone … && cp .env.example .env && make start && make test`
 - [x] `make e2e` in CI: `.github/workflows/ci.yml` runs rails test, node test, playwright (fake services) on every push
-- [ ] Final push
+- [x] Final push
 
 **Acceptance:**
 ```sh
