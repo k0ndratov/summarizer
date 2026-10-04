@@ -1,6 +1,7 @@
 services:
   web:
     build: ./web
+    user: "${UID:-1000}:${GID:-1000}"   # files written to the bind mount stay owned by you
     ports:
       - "3000:3000"
     env_file:

@@ -6,7 +6,7 @@ RUN apt-get update -qq \
 
 WORKDIR /app
 COPY Gemfile Gemfile.lock* ./
-RUN bundle install
+RUN bundle install && chmod -R a+rwX /usr/local/bundle
 
 COPY . .
 
